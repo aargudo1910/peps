@@ -40,16 +40,6 @@ def crear_mascota():
     
     return render_template('mascota.html', form = form)
 
-@app.route('/mascotas', methods = ['GET'])
-def ver_mascotas():
-    mascotas = tabla_mascotas.find_one({})
-    if mascotas:
-        mascotas = tabla_mascotas.find({})
-        return render_template('mascotas.html', mascotas=mascotas)
-    else: 
-        return render_template('mascotas.html', vacio_mascotas = True)
-    return render_template('mascotas.html', mascotas=mascotas)
-
 @app.route('/mascotas/<_id>/delete', methods=['POST'])
 def borrar_mascota(_id):
     tabla_mascotas.delete_one({'_id': ObjectId(_id)})
@@ -77,19 +67,29 @@ def crear_solicitud():
         flash('Solicitud enviada satisfactoriamente', 'success')
     return render_template('solicitud.html', form = form)
 
+@app.route('/mascotas', methods = ['GET'])
+def ver_mascotas():
+    mascotas = tabla_mascotas.find_one({})
+    if mascotas:
+        mascotas = tabla_mascotas.find({})
+        return render_template('mascotas.html', mascotas=mascotas)
+    else: 
+        return render_template('mascotas.html', vacio_mascotas = True)
+    return render_template('mascotas.html', mascotas=mascotas)
+
 @app.route('/ver/solicitudes', methods = ['GET'])
 def ver_solicitudes():
     solicitudes = tabla_solicitudes.find_one({})
     if solicitudes:
-        solicitud = tabla_solicitudes.find({})
+        solicitudes = tabla_solicitudes.find({})
         return render_template('solicitudes.html', solicitudes=solicitudes)
     else: 
         return render_template('solicitudes.html', vacio_solicitudes = True)
     return render_template('solicitudes.html', solicitudes=solicitudes)
 
-@app.route("/solicitudes/<_cedula>/delete", methods=['POST'])
-def borrar_solicitud(_cedula):
-    tabla_solicitudes.delete_one({'_cedula': ObjectId(_cedula)})
+@app.route("/solicitudes/<_id>/delete", methods=['POST'])
+def borrar_solicitud(_id):
+    tabla_solicitudes.delete_one({'_id': ObjectId(_id)})
     return redirect(url_for('ver_solicitudes'))
 
 def save_picture(form_picture):
