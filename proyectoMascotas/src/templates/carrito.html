@@ -1,0 +1,27 @@
+{%extends 'base.html'%} {%block body%}
+
+{%for producto in productos%}
+
+<article class="media content-section animated bounceInDown fast">
+
+    <img class='rounded-circle article-img'
+        src="{{ url_for('static', filename='Productos/'+producto[0]['imagen']) }}">
+    <div class="media-body">
+        <div class="article-metadata">
+            
+            Nombre: <a class="mr-2" href="#">{{ producto[0].nombre}}</a>
+            edad: <a class="mr-2" href="#">{{producto[0].edad}}</a></br>
+            animal: <a class="mr-2" href="#">{{producto[0].animal}}</a></br>
+            raza: <a class="mr-2" href="#">{{producto[0].raza}}</a></br>
+        </div>
+        <div class="article-metadata">
+            <button type="button" class='btn btn-danger btn-sm mt-1 mb-1 ml-1 p-2' data-toggle="modal"
+                data-target="#deleteModal">Borrar</button>
+        </div>
+
+    </div>
+</article>
+
+{%endfor%}
+<a class="nav-item nav-link btn btn-success" href="{{url_for('pago')}}">Crear</a>
+{% endblock %}
