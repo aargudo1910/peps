@@ -1,47 +1,54 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField, IntegerField, FileField
 from wtforms.validators import DataRequired, ValidationError
-from src import tabla_carritos, tabla_productos
+from src import tabla_solicitudes, tabla_mascotas
 
 class BuscadorForm(FlaskForm):
     mascota = StringField('Animales', validators=[
                            DataRequired(message='Ingrese un animal que desee buscar')])
     submit = SubmitField('Consultar')
     
-    def validar_carrito(self, mascota):
-        mascota = tabla_carritos.find_one({'carrito_id': mascota.data})
+    def validar_mascota(self, mascota):
+        mascota = tabla_solicitudes.find_one({'mascota_id': mascota.data})
         if not(mascota):
             raise ValidationError(
                 'No existe. Porfavor ingrese uno diferente')
 
 
-class PagoForm(FlaskForm):
+class SolicitudForm(FlaskForm):
+    cedula = StringField('Cedula', validators=[
+                           DataRequired(message='Ingrese su cedula porfavor porfavor')])
     nombre = StringField('Nombre', validators=[
                            DataRequired(message='Ingrese su nombre porfavor')])
     apellido = StringField('Apellido', validators=[
                            DataRequired(message='Ingrese su apellido porfavor')])
-    cedula = StringField('Cedula', validators=[
-                           DataRequired(message='Ingrese su cedula porfavor porfavor')])
-    email = StringField('Email', validators=[DataRequired(
+    correo = StringField('Email', validators=[DataRequired(
         message='Ingrese un email porfavor')])
     telefono = StringField('Número de teléfono', validators=[
                            DataRequired(message='Ingrese un número de telefono')])
+    mascota = StringField('Mascota', validators=[
+                           DataRequired(message='Ingrese la mascota que desea adoptar')])
     submit = SubmitField('Solicitar')
+    def validar_solicitud(self, solicitud):
+        mascota = tabla_solicitudes.find_one({'solicitud_id': solicitud.data})
+        if not(solicitud):
+            raise ValidationError(
+                'No existe. Porfavor ingrese uno diferente')
 
-class ProductoForm(FlaskForm):
+class MascotaForm(FlaskForm):
     nombre = StringField('Nombre', validators=[
                            DataRequired(message='Ingrese el nombre porfavor')])
     edad = StringField('Edad', validators=[
                            DataRequired(message='Ingrese la edad porfavor')])
     animal = StringField('Animal', validators=[
                            DataRequired(message='Ingrese que animal es su mascota porfavor')])
-    raza = IntegerField('Raza', validators=[
+    raza = StringField('Raza', validators=[
                            DataRequired(message='Ingrese la raza porfavor')])
     imagen = FileField('Foto')
     submit = SubmitField('Subir mascota')  
 
-    def validar_producto(self, codigo):
-        producto = tabla_productos.find_one({'codigo': codigo.data})
-        if producto:
+    def validar_mascota(self, codigo):
+        mascota = tabla_mascotas.find_one({'codigo': codigo.data})
+        if mascota:
             raise ValidationError(
                 'Este codigo ya existe. Porfavor ingrese otro  codigo')

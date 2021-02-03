@@ -3,126 +3,94 @@ import os
 import time
 import secrets
 from flask import render_template, flash, redirect, url_for, session, request, jsonify
-from src import app, tabla_productos, tabla_carritos
-from src.forms import BuscadorForm, PagoForm, ProductoForm
+from src import app, tabla_mascotas, tabla_solicitudes
+from src.forms import BuscadorForm, SolicitudForm, MascotaForm
 from bson.objectid import ObjectId
 
 @app.route('/', methods =['GET', 'POST'])
 def home():
     form = BuscadorForm()
     if form.validate_on_submit():
-        carrito = tabla_carritos.find_one({'carrito_id': form.carrito.data})
-        if carrito:
-            session['carrito_id'] = form.carrito.data
-            print(session['carrito_id'])
-            return redirect(url_for('buscar_carrito'))
-        flash('No existe el carrito', 'warning')
+        solicitud = tabla_solicitudes.find_one({'solicitud_id': form.solicitud.data})
+        if solicitud:
+            session['solicitud_id'] = form.solicitud.data
+            print(session['solicitud_id'])
+            return redirect(url_for('buscar_solicitud'))
+        flash('No existe la solicitud', 'warning')
     return render_template('buscador.html', form = form)
 
-@app.route('/carritos', methods = ['POST'])
-def crear_carritos():
-    lista = request.get_data().decode("utf-8").split(',')
-    carrito_id = lista[1]
-    producto_id = lista[0]
-    print(carrito_id)
-    carrito = tabla_carritos.find_one({'carrito_id': carrito_id})
-    producto = tabla_productos.find_one({'animal': producto_id})
-    if not(carrito):
-        carrito = {
-                'carrito_id': carrito_id,
-                'productos': [producto['animal']],
-                'objetos':[producto],
-                'cantidades': [1]
-
-                }
-        tabla_carritos.insert_one(carrito)
-    else:
-        productos = carrito['productos']
-        cantidades = carrito['cantidades']
-        objetos = carrito['objetos']
-        if producto['animal'] in productos:
-            index = productos.index(producto_id)
-            cantidades[index] += 1
-        else:
-            productos.append(producto_id)
-            cantidades.append(1)
-            objetos.append(producto)
-
-        cambios = {
-                    'productos': productos,
-                    'objetos': objetos,
-                    'cantidades': cantidades
-                    }
-        tabla_carritos.update_one(
-                                    {'carrito_id': carrito_id}, 
-                                    {'$set': cambios}
-                                    )
-
-    return jsonify({'status': 'ok'})
-@app.route('/carritos/', methods = ['GET'])
-def buscar_carrito():
-    final = []
-    carrito = tabla_carritos.find_one({'carrito_id': session['carrito_id']})
-    productos = carrito['objetos']
-    cantidades = carrito['cantidades']
-    for indice, producto in enumerate(productos):
-        elemento = (producto, cantidades[indice])
-        final.append(elemento)
-    return render_template('carrito.html', productos = final)
-
-@app.route('/producto', methods = ['GET', 'POST'])
+@app.route('/mascota', methods = ['GET', 'POST'])
 def crear_mascota():
-    form = ProductoForm()
+    form = MascotaForm()
     if form.validate_on_submit():
         picture_file, f_ext = save_picture(form.imagen.data)
-        producto = {
+        mascota = {
                     'nombre': form.nombre.data,
                     'edad': form.edad.data,
                     'animal': form.animal.data,
                     'raza': form.raza.data,
                     'imagen': picture_file
                     }
-        tabla_productos.insert_one(producto)
+        tabla_mascotas.insert_one(mascota)
         form.nombre.data = ''
         form.edad.data = ''
         form.animal.data = ''
-        form.raza.data = 0
-        flash('Producto creado satisfactoriamente', 'success')
+        form.raza.data = ''
+        flash('Mascota subida satisfactoriamente', 'success')
     
-    return render_template('producto.html', form = form)
+    return render_template('mascota.html', form = form)
 
-@app.route('/productos', methods = ['GET'])
+@app.route('/mascotas', methods = ['GET'])
 def ver_mascotas():
-    productos = tabla_productos.find_one({})
-    if productos:
-        productos = tabla_productos.find({})
-        return render_template('productos.html', productos=productos)
+    mascotas = tabla_mascotas.find_one({})
+    if mascotas:
+        mascotas = tabla_mascotas.find({})
+        return render_template('mascotas.html', mascotas=mascotas)
     else: 
-        return render_template('productos.html', vacio_productos = True)
-    return render_template('productos.html', productos=productos)
+        return render_template('mascotas.html', vacio_mascotas = True)
+    return render_template('mascotas.html', mascotas=mascotas)
 
-@app.route('/pago', methods = ['GET', 'POST'])
-def pago():
-    form = PagoForm()
+@app.route('/mascotas/<_id>/delete', methods=['POST'])
+def borrar_mascota(_id):
+    tabla_mascotas.delete_one({'_id': ObjectId(_id)})
+    return redirect(url_for('ver_mascotas'))
+
+@app.route('/solicitud', methods = ['GET', 'POST'])
+def crear_solicitud():
+    form = SolicitudForm()
     if form.validate_on_submit():
-        flash('Gracias por ingresar mascotita')
-        return redirect(url_for('logout'))
-    return render_template('pago.html', form = form)
+        solicitud = {
+                    'cedula': form.cedula.data,
+                    'nombre': form.nombre.data,
+                    'apellido': form.apellido.data,
+                    'correo': form.correo.data,
+                    'telefono': form.telefono.data,
+                    'mascota': form.mascota.data
+                    }
+        tabla_solicitudes.insert_one(solicitud)
+        form.cedula.data = ''
+        form.nombre.data = ''
+        form.apellido.data = ''
+        form.correo.data = ''
+        form.telefono.data = ''
+        form.mascota.data = ''
+        flash('Solicitud enviada satisfactoriamente', 'success')
+    return render_template('solicitud.html', form = form)
 
-@app.route("/logout")
-def logout():
-    tabla_carritos.delete_one({'carrito_id': session['carrito_id']})
-    session.clear()
+@app.route('/ver/solicitudes', methods = ['GET'])
+def ver_solicitudes():
+    solicitudes = tabla_solicitudes.find_one({})
+    if solicitudes:
+        solicitud = tabla_solicitudes.find({})
+        return render_template('solicitudes.html', solicitudes=solicitudes)
+    else: 
+        return render_template('solicitudes.html', vacio_solicitudes = True)
+    return render_template('solicitudes.html', solicitudes=solicitudes)
 
-    flash('Pago realizado satisfactoriamente')
-    return redirect(url_for('home'))
-
-@app.route("/productos/<_id>/delete", methods=['POST'])
-def borrar_producto(_id):
-    tabla_productos.delete_one({'_id': ObjectId(_id)})
-    return redirect(url_for('ver_productos'))
-
-
+@app.route("/solicitudes/<_cedula>/delete", methods=['POST'])
+def borrar_solicitud(_cedula):
+    tabla_solicitudes.delete_one({'_cedula': ObjectId(_cedula)})
+    return redirect(url_for('ver_solicitudes'))
 
 def save_picture(form_picture):
     extensions = ['.jpg', '.jpeg', '.tif', '.png', '.PNG']
@@ -131,7 +99,7 @@ def save_picture(form_picture):
     picture_fn = random_hex + f_ext
     if f_ext in extensions:
         picture_path = os.path.join(
-            app.root_path, 'static/Productos', picture_fn)
+            app.root_path, 'static/Mascotas', picture_fn)
         output_size = (125, 125)
         i = Image.open(form_picture)
         i.thumbnail(output_size)

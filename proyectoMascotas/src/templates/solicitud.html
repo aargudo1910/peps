@@ -1,0 +1,89 @@
+{%extends 'base.html'%} {%block body%}
+
+<div class="content-section animated fadeInUp">
+    <div>
+        <form method="POST" action="" enctype='multipart/form-data'>
+            {{ form.hidden_tag() }}
+            <fieldset class="form-group">
+                <legend class="border-bottom mb-4">{{legend}}</legend>
+                <div class="form-group">
+                    {{ form.cedula.label(class="form-control-label") }}
+                    {% if form.cedula.errors %} {{ form.cedula(class="form-control form-control-lg
+             is-invalid") }}
+                    <div class="invalid-feedback">
+                        {% for error in form.cedula.errors %}
+                        <span>{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                    {% else %} {{ form.cedula(class="form-control form-control-lg") }} {%
+             endif %}
+                </div>
+
+                <div class="form-group">
+                    {{ form.nombre.label(class="form-control-label") }}
+                    {% if form.nombre.errors %} {{ form.nombre(class="form-control form-control-lg
+         is-invalid") }}
+                    <div class="invalid-feedback">
+                        {% for error in form.nombre.errors %}
+                        <span>{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                    {% else %} {{ form.nombre(class="form-control form-control-lg") }} {%
+         endif %}
+                </div>
+                <div class="form-group">
+                    {{ form.apellido.label(class="form-control-label") }}
+                    {% if form.apellido.errors %} {{ form.apellido(class="form-control form-control-lg
+     is-invalid") }}
+                    <div class="invalid-feedback">
+                        {% for error in form.apellido.errors %}
+                        <span>{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                    {% else %} {{ form.apellido(class="form-control form-control-lg") }} {%
+     endif %}
+                </div>
+            <div class="form-group">
+                {{ form.correo.label(class="form-control-label") }}
+                {% if form.correo.errors %} {{ form.correo(class="form-control form-control-lg
+ is-invalid") }}
+                <div class="invalid-feedback">
+                    {% for error in form.correo.errors %}
+                    <span>{{ error }}</span>
+                    {% endfor %}
+                </div>
+                {% else %} {{ form.correo(class="form-control form-control-lg") }} {%
+ endif %}
+            </div>
+            <div class="form-group">
+                {{ form.telefono.label(class="form-control-label") }}
+                {% if form.telefono.errors %} {{ form.telefono(class="form-control form-control-lg
+ is-invalid") }}
+                <div class="invalid-feedback">
+                    {% for error in form.telefono.errors %}
+                    <span>{{ error }}</span>
+                    {% endfor %}
+                </div>
+                {% else %} {{ form.telefono(class="form-control form-control-lg") }} {%
+ endif %}
+            </div>
+            <div class="form-group">
+                {{ form.mascota.label(class="form-control-label") }}
+                {% if form.mascota.errors %} {{ form.mascota(class="form-control form-control-lg
+ is-invalid") }}
+                <div class="invalid-feedback">
+                    {% for error in form.mascota.errors %}
+                    <span>{{ error }}</span>
+                    {% endfor %}
+                </div>
+                {% else %} {{ form.mascota(class="form-control form-control-lg") }} {%
+ endif %}
+            </div>
+    </fieldset>
+            <div class="form-group">
+                {{ form.submit(class="btn btn-outline-info") }}
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
