@@ -3,18 +3,6 @@ from wtforms import StringField, SubmitField, IntegerField, FileField
 from wtforms.validators import DataRequired, ValidationError
 from src import tabla_solicitudes, tabla_mascotas
 
-class BuscadorForm(FlaskForm):
-    mascota = StringField('Animales', validators=[
-                           DataRequired(message='Ingrese un animal que desee buscar')])
-    submit = SubmitField('Consultar')
-    
-    def validar_mascota(self, mascota):
-        mascota = tabla_solicitudes.find_one({'mascota_id': mascota.data})
-        if not(mascota):
-            raise ValidationError(
-                'No existe. Porfavor ingrese uno diferente')
-
-
 class SolicitudForm(FlaskForm):
     cedula = StringField('Cedula', validators=[
                            DataRequired(message='Ingrese su cedula porfavor porfavor')])

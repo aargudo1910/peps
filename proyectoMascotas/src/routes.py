@@ -4,20 +4,12 @@ import time
 import secrets
 from flask import render_template, flash, redirect, url_for, session, request, jsonify
 from src import app, tabla_mascotas, tabla_solicitudes
-from src.forms import BuscadorForm, SolicitudForm, MascotaForm
+from src.forms import SolicitudForm, MascotaForm
 from bson.objectid import ObjectId
 
 @app.route('/', methods =['GET', 'POST'])
 def home():
-    form = BuscadorForm()
-    if form.validate_on_submit():
-        solicitud = tabla_solicitudes.find_one({'solicitud_id': form.solicitud.data})
-        if solicitud:
-            session['solicitud_id'] = form.solicitud.data
-            print(session['solicitud_id'])
-            return redirect(url_for('buscar_solicitud'))
-        flash('No existe la solicitud', 'warning')
-    return render_template('buscador.html', form = form)
+    return render_template('base.html')
 
 @app.route('/mascota', methods = ['GET', 'POST'])
 def crear_mascota():
